@@ -17,7 +17,7 @@ import {
     Switch,
     Route,
     Link as RLink,
-    useParams
+    useLocation
 } from 'react-router-dom';
 
 import AWS from 'aws-sdk';
@@ -48,9 +48,17 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 function Welcome(props) {
-    //let slug = useParams();
+    const { hash } = useLocation();
+    const hashParams = hash.replace("#", "").split("&").map(e => e.split("="));
+
     return (
-        <p>Welcome page</p>
+        <>
+            <p>Welcome User!</p>
+            <p>Your credentials:</p>
+            <table>
+                {hashParams.map(e=> <tr><td>{e[0]}</td><td>{e[1]}</td></tr>)}
+            </table>
+        </>
     );
 }
 
