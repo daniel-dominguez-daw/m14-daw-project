@@ -26,18 +26,12 @@ import axios from 'axios';
 
 import AWS from 'aws-sdk';
 
-
-const DOMAINLOGIN = 'https://danieldm14.auth.us-east-1.amazoncognito.com/';
-const APPCLIENT = '7tpgrtnd1r2nsej9nt0gg8cj1a';
-const LOGINREDIRECT = 'https://jdam14dual.org:3000/welcome/';
-const APPSECRET = '167m23isdch0ovhf0hfo64k491rah95mqtrng0aqud9f19e3gc4t';
-//const LOGINURL = `https://${DOMAINLOGIN}/login?response_type=code&client_id=${APPCLIENT}&redirect_uri=${LOGINREDIRECT}`;
-
 class Oauth2AWSAPI {
-    constructor(axiosInstance, baseApi, client){
+    constructor(axiosInstance, baseApi, client, secret){
         this.axios = axiosInstance;
         this.baseApi = baseApi;
         this.client = client;
+        this.secret = secret;
     }
 
     authorizationEndPoint(redirectUri){
@@ -45,7 +39,7 @@ class Oauth2AWSAPI {
             response_type: 'code',
             client_id: this.client,
             redirect_uri: redirectUri,
-            state: 'asdf',
+            state: 'asdf', // security
             identity_provider: 'Google'
         };
 
@@ -59,7 +53,7 @@ class Oauth2AWSAPI {
         Must always be 'application/x-www-form-urlencoded'.
         */
         const headers = {
-            'Authorization': 'Basic '+ btoa(APPCLIENT + ":" + APPSECRET),
+            'Authorization': 'Basic '+ btoa(this.client + ":" + this.secret),
             'Content-Type': 'application/x-www-form-urlencoded'
         };
         
@@ -67,8 +61,8 @@ class Oauth2AWSAPI {
         const params = {
             'grant_type': 'authorization_code',
             'code': codeGrant,
-            'redirect_uri' : LOGINREDIRECT,
-            'client_id': APPCLIENT
+            'redirect_uri' : process.env.REACT_APP_COGNITO_AUTH_REDIRECT_URI,
+            'client_id': this.client
         };
         const uri = this.baseApi + 'oauth2/token';
         return [uri, params, headers];
@@ -103,7 +97,7 @@ class Oauth2AWSAPI {
         );
     }
 
-    toGetUri(arr){
+    toURI(arr){
         const params = [];
         let pair;
         for(let x in arr[1]) {
@@ -115,8 +109,12 @@ class Oauth2AWSAPI {
     }
 }
 
-const api = new Oauth2AWSAPI(axios, DOMAINLOGIN, APPCLIENT);
-const LOGINURL = api.toGetUri(api.authorizationEndPoint(LOGINREDIRECT));
+const api = new Oauth2AWSAPI(axios, 
+                    process.env.REACT_APP_COGNITO_AUTH_API_BASE_URI, 
+                    process.env.REACT_APP_COGNITO_CLIENT_ID,
+                    process.env.REACT_APP_COGNITO_CLIENT_SECRET);
+
+const LOGINURL = api.toURI(api.authorizationEndPoint(process.env.REACT_APP_COGNITO_AUTH_REDIRECT_URI));
 
 // Initialize the Amazon Cognito credentials provider
 
