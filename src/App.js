@@ -1,5 +1,5 @@
 import './App.css';
-
+import React, { useState, useEffect } from 'react';
 import {
     BrowserRouter as Router,
     Switch,
@@ -16,6 +16,21 @@ import Home from './components/Home.js';
 import Logout from './components/Logout.js';
 
 import { Oauth2AWSAPI } from './utils.js';
+
+const userInfoDefault = {
+    loggedIn: false,
+    name: null,
+    picture: null,
+    tokens: {
+        access: null,
+        refresh: null,
+        id: null,
+        expirationDate: null,
+        type: null
+    }
+};
+
+const UserInfoContext = React.createContext(userInfoDefault);
 
 // import AWS from 'aws-sdk';
 /* 
@@ -37,28 +52,58 @@ const LOGINURL = apiInstance.toURI(
                         apiInstance.authorizationEndPoint(
                           process.env.REACT_APP_COGNITO_AUTH_REDIRECT_URI));
 
+const storage = window.localStorage;
+const storageUserInfoKey = 'userInfo';
+
 function App() {
+    var storedUser = (storage.getItem(storageUserInfoKey) === null) ? 
+                        userInfoDefault : 
+                        JSON.parse(storage.getItem(storageUserInfoKey));
+
+
+    const [userInfo, setUserInfo] = useState(storedUser);
+
+    const handleUserInfo = (data) => {
+        setUserInfo(data);
+        storage.setItem('userInfo', JSON.stringify(data));
+    };
+
+    const handleLogout = (callback) => {
+        storage.clear();
+        setUserInfo(userInfoDefault);
+        callback();
+    };
+
+    const CoreUIprops = {
+        loginHref: LOGINURL,
+        isLoggedIn: userInfo.loggedIn
+    };
+
     return (
-        <Router>
-            <Switch>
-                <Route path="/welcome/">
-                    <CoreUI loginHref={LOGINURL} title="Welcome">
-                        <Welcome api={apiInstance} />
-                    </CoreUI>
-                </Route>
-                <Route path="/logout/">
-                    <CoreUI loginHref={LOGINURL} title="Logout">
-                        <Logout />
-                    </CoreUI>
-                </Route>
-                <Route path="/">
-                    <CoreUI loginHref={LOGINURL} title="Home">
-                        <Home loginHref={LOGINURL}/>
-                    </CoreUI>
-                </Route>
-            </Switch>
-        </Router>
+        <UserInfoContext.Provider value={userInfo}>
+            <Router>
+                <Switch>
+                    <Route path="/welcome/">
+                        <CoreUI {...CoreUIprops} title="Welcome">
+                            <Welcome api={apiInstance} handleUserInfo={handleUserInfo}/>
+                        </CoreUI>
+                    </Route>
+                    <Route path="/logout/">
+                        <CoreUI {...CoreUIprops} title="Logout">
+                            <Logout handleLogout={handleLogout} />
+                        </CoreUI>
+                    </Route>
+                    <Route path="/">
+                        <CoreUI {...CoreUIprops} title="Home">
+                            <Home loginHref={LOGINURL}/>
+                        </CoreUI>
+                    </Route>
+                </Switch>
+            </Router>
+        </UserInfoContext.Provider>
     );
 }
 
 export default App;
+
+export {UserInfoContext, userInfoDefault};

@@ -22,7 +22,7 @@ class Oauth2AWSAPI {
             identity_provider: 'Google'
         };
 
-        const uri = this.baseApi + 'oauth2/authorize';
+        const uri = this.baseApi + 'login';
         return [uri, params];
     }
 
@@ -71,7 +71,7 @@ class Oauth2AWSAPI {
 
         console.log(obj.headers);
 
-        this.axios(
+        return this.axios(
             obj
         );
     }
