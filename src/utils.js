@@ -47,10 +47,18 @@ class Oauth2AWSAPI {
         return [uri, params, headers];
     }
 
-    performRequest(data, method) {
-        console.log("BLARG");
-        console.log(data[1]);
+    userInfoEndPoint(accessToken) {
+        const headers = {
+            'Authorization': 'Bearer '+ accessToken
+        };
 
+        const params = {};
+
+        const uri = this.baseApi + 'oauth2/userInfo';
+        return [uri, params, headers];
+    }
+
+    performRequest(data, method) {
         let obj = {
             method: method,
             url: data[0],
@@ -62,7 +70,6 @@ class Oauth2AWSAPI {
                 }
                 return str.join("&");
             }
-
         };
 
         if(data[2] !== undefined) {

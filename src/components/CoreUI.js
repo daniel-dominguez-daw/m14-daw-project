@@ -4,6 +4,7 @@ import { makeStyles } from '@material-ui/core/styles';
 // material-ui components
 import Container from '@material-ui/core/Container';
 import AppBar from '@material-ui/core/AppBar';
+import Avatar from '@material-ui/core/Avatar';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
@@ -29,9 +30,9 @@ const useStyles = makeStyles((theme) => ({
 
 function CoreUI(props) {
     const classes = useStyles();
-    const { loginHref, isLoggedIn, title, children } = props;
-    console.log('isLoggedIn prop:');
-    console.log(isLoggedIn);
+    const { loginHref,
+            isLoggedIn,
+            title, displayName, avatar, children } = props;
 
     const [ menuEl, setMenuEl ] = useState(null);
     const open = Boolean(menuEl);
@@ -79,6 +80,9 @@ function CoreUI(props) {
                     <Typography variant="h6" className={classes.title}>
                         {title}
                     </Typography>
+
+                    <Avatar alt={displayName} src={avatar} />
+
                     { (isLoggedIn === false) ? 
                     <Button color="inherit">
                         <Link href={loginHref} color="inherit">LOGIN</Link>

@@ -19,6 +19,7 @@ import { Oauth2AWSAPI } from './utils.js';
 
 const userInfoDefault = {
     loggedIn: false,
+    email: null,
     name: null,
     picture: null,
     tokens: {
@@ -83,7 +84,9 @@ function App() {
 
     var CoreUIprops = {
         loginHref: LOGINURL,
-        isLoggedIn: userInfo.loggedIn
+        isLoggedIn: userInfo.loggedIn,
+        displayName: userInfo.name,
+        avatar: userInfo.picture
     };
 
     return (
