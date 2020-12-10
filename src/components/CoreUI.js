@@ -30,6 +30,8 @@ const useStyles = makeStyles((theme) => ({
 function CoreUI(props) {
     const classes = useStyles();
     const { loginHref, isLoggedIn, title, children } = props;
+    console.log('isLoggedIn prop:');
+    console.log(isLoggedIn);
 
     const [ menuEl, setMenuEl ] = useState(null);
     const open = Boolean(menuEl);

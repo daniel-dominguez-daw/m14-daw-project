@@ -24,7 +24,7 @@ function Welcome(props) {
                 // onSuccess perform a userInfo request and fill 
                 let expirationDate = new Date();
                 expirationDate.setSeconds(expirationDate.getSeconds() + data.data.expires_in);
-                const newUserInfo = Object.assign(userInfoDefault, {
+                const newUserInfo = Object.assign({...userInfoDefault}, {
                     loggedIn: true,
                     tokens: {
                         access: data.data.access_token,
@@ -64,6 +64,7 @@ function Welcome(props) {
                 <>
                     <p>This is your user profile</p>
                     <p>user status: {loggedIn ? 'Logged in' : 'Not logged in'}</p>
+                    <p>@TODO Fill userInfo below</p>
                     <p>user name: {name ? name : 'Unknown'}</p>
                     <p>picture: {picture}</p>
                 </>

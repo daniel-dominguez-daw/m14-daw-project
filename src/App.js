@@ -63,18 +63,25 @@ function App() {
 
     const [userInfo, setUserInfo] = useState(storedUser);
 
+    // when userInfo state changes...
+    useEffect(() => {
+        storage.setItem('userInfo', JSON.stringify(userInfo));
+
+       // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [JSON.stringify(userInfo), userInfo]);
+
     const handleUserInfo = (data) => {
         setUserInfo(data);
-        storage.setItem('userInfo', JSON.stringify(data));
     };
 
+    // LOGOUT
     const handleLogout = (callback) => {
         storage.clear();
         setUserInfo(userInfoDefault);
         callback();
     };
 
-    const CoreUIprops = {
+    var CoreUIprops = {
         loginHref: LOGINURL,
         isLoggedIn: userInfo.loggedIn
     };
@@ -107,3 +114,7 @@ function App() {
 export default App;
 
 export {UserInfoContext, userInfoDefault};
+
+
+
+
