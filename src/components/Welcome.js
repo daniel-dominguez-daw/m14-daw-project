@@ -42,7 +42,7 @@ function Welcome(props) {
                         expirationDate.setSeconds(expirationDate.getSeconds() + data.data.expires_in);
                         const newUserInfo = Object.assign({...userInfoDefault}, {
                             loggedIn: true,
-                            name: dataName[0].displayName,
+                            name: dataName,
                             email: userdata.data.email,
                             picture: userdata.data.picture,
                             tokens: {
