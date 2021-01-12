@@ -37,7 +37,7 @@ function Welcome(props) {
                 api.performRequest(
                     api.userInfoEndPoint(data.data.access_token), 'get')
                     .then((userdata) => {
-                        const dataName = JSON.parse(userdata.data.name);
+                        const dataName = userdata.data.name;
                         let expirationDate = new Date();
                         expirationDate.setSeconds(expirationDate.getSeconds() + data.data.expires_in);
                         const newUserInfo = Object.assign({...userInfoDefault}, {
@@ -56,6 +56,7 @@ function Welcome(props) {
 
                         handleUserInfo(newUserInfo);
                     }, (er) => {
+                        console.log('ERROR');
                         // handle userInfo api errors
                         // invalid token or wrong request
                     });
