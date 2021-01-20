@@ -15,7 +15,7 @@ import Welcome from './components/Welcome.js';
 import Home from './components/Home.js';
 import Logout from './components/Logout.js';
 
-import { Oauth2AWSAPI } from './utils.js';
+import { Oauth2AWSAPI, LambdaAuthorizedApi } from './utils.js';
 
 const userInfoDefault = {
     loggedIn: false,
@@ -48,6 +48,9 @@ const apiInstance = new Oauth2AWSAPI(axios,
                     process.env.REACT_APP_COGNITO_AUTH_API_BASE_URI, 
                     process.env.REACT_APP_COGNITO_CLIENT_ID,
                     process.env.REACT_APP_COGNITO_CLIENT_SECRET);
+
+// Lambda backend api
+const lambdaApiInstance = new LambdaAuthorizedApi(axios, process.env.REACT_APP_LAMBDA_API_BASE_URL);
 
 const LOGINURL = apiInstance.toURI(
                         apiInstance.authorizationEndPoint(
@@ -95,7 +98,7 @@ function App() {
                 <Switch>
                     <Route path="/welcome/">
                         <CoreUI {...CoreUIprops} title="Welcome">
-                            <Welcome api={apiInstance} handleUserInfo={handleUserInfo}/>
+                            <Welcome api={apiInstance} lambdaApi={lambdaApiInstance} accessToken={userInfo.tokens.access} handleUserInfo={handleUserInfo}/>
                         </CoreUI>
                     </Route>
                     <Route path="/logout/">
