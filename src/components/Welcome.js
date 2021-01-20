@@ -1,7 +1,8 @@
 import { useEffect } from 'react';
 import { useLocation, Link as RouterLink } from 'react-router-dom';
 import { makeStyles } from '@material-ui/core/styles';
-import Button from '@material-ui/core/Link';
+import Button from '@material-ui/core/Button';
+import Grid from '@material-ui/core/Grid';
 import Avatar from '@material-ui/core/Avatar';
 import { UserInfoContext, userInfoDefault } from '../App.js';
 
@@ -20,7 +21,7 @@ const useStyles = makeStyles((theme) => (
 function Welcome(props) {
     const classes = useStyles();
 
-    const { api, handleUserInfo } = props;
+    const { api, lambdaApi, handleUserInfo, accessToken } = props;
     const { search } = useLocation();
 
     // on component mount
@@ -70,8 +71,40 @@ function Welcome(props) {
                 */
             });
         }
-
+// eslint-disable-next-line
     }, []);
+
+    /**
+     *
+     * This function tests our AWS Api Gateway Moodly REST
+     * by calling the /helloWorld end point
+     *
+     * all requests using lambdaApi require to be Authorized (logged in and tokens unexpired)
+     * An Authorization header must be send:
+     * Authorization: Bearer tokenhere
+     *
+     * this is handled by lambdaApi itself
+     */
+    const helloWorldApiCall = () => {
+        lambdaApi.performRequest('GET', '/helloWorld', accessToken).then(res => {
+            if(res.status === 200) {
+                alert(res.data);
+            }
+        }).catch((error) => {
+            if(error.response) {
+                if(error.response.status === 401) {
+                    const msg = `Error: ${JSON.stringify(error.response.data)}
+                    You are not loggedIn or your tokens are not valid anymore
+                    @todo: call to refresh token oauth api and retry Request
+                    @todo: force logout and go to login page again if you can't refresh the token anymore
+                    `;
+
+                    alert(msg);
+                }
+            }
+            console.log(error);
+        });
+    };
 
     return (
         <>
@@ -89,7 +122,15 @@ function Welcome(props) {
                     </>
                 )}
             </UserInfoContext.Consumer>
-            <Button component={RouterLink} to="/">Go to Homepage</Button>
+            <Grid
+                container
+                direction="column"
+                justify="center"
+                alignItems="center">
+
+                <Button variant="contained" color="primary" onClick={helloWorldApiCall}>TEST LAMBDA AUTHORIZED API</Button>
+                <Button variant="contained" component={RouterLink} to="/">Go to Homepage</Button>
+            </Grid>
         </>
     );
 }
