@@ -1,5 +1,3 @@
-'use strict'
-
 /**
  * Class that manages AWS COGNITO AUTH API so we can avoid using the aws cancer sdk for login!
  *
@@ -95,4 +93,49 @@ class Oauth2AWSAPI {
     }
 }
 
-export { Oauth2AWSAPI };
+class LambdaAuthorizedApi {
+    constructor(axiosInstance, baseUrl){
+        this.axios = axiosInstance;
+        this.baseUrl = baseUrl;
+    }
+
+    performRequest(method, endpoint, accessToken, params = {}) {
+        this.validateMethod(method);
+
+        const headers = {
+            'Authorization': 'Bearer '+ accessToken
+        };
+
+        let obj = {
+            method: method,
+            url: this.baseUrl + endpoint,
+            data: params,
+            headers: headers,
+            transformRequest: (data, headers) => {
+                let str = [];
+                for( let x in data) {
+                    str.push(x + '=' + encodeURIComponent(data[x]));
+                }
+                return str.join("&");
+            }
+
+        };
+
+        this.axios.defaults.headers.common['Authorization'] = accessToken;
+
+        console.log(obj);
+        return this.axios(obj);
+    }
+
+    validateMethod(method) {
+        if(method === undefined) {
+            throw new Error("method not supplied");
+        }
+
+        if(['GET','POST','PUT','DELETE','HEAD'].indexOf(method.toUpperCase()) === -1) {
+            throw new Error(method + " method not allowed");
+        }
+    }
+}
+
+export { Oauth2AWSAPI, LambdaAuthorizedApi };
