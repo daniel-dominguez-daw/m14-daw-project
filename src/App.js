@@ -1,110 +1,126 @@
-import logo from './logo.svg';
 import './App.css';
-
-import { makeStyles } from '@material-ui/core/styles';
-import Container from '@material-ui/core/Container';
-import Box from '@material-ui/core/Box';
-import AppBar from '@material-ui/core/AppBar';
-import Toolbar from '@material-ui/core/Toolbar';
-import Typography from '@material-ui/core/Typography';
-import Button from '@material-ui/core/Button';
-import IconButton from '@material-ui/core/IconButton';
-import MenuIcon from '@material-ui/icons/Menu';
-import Link from '@material-ui/core/Link';
-
+import React, { useState, useEffect } from 'react';
 import {
     BrowserRouter as Router,
     Switch,
-    Route,
-    Link as RLink,
-    useLocation
+    Route
 } from 'react-router-dom';
 
-import AWS from 'aws-sdk';
+// Libs
+import axios from 'axios'; // ajax library
 
+// Components
+import CoreUI from './components/CoreUI.js';
+import Welcome from './components/Welcome.js';
+import Home from './components/Home.js';
+import Logout from './components/Logout.js';
 
-const DOMAINLOGIN = 'danieldm14.auth.us-east-1.amazoncognito.com';
-const LOGINCLIENT = '7tpgrtnd1r2nsej9nt0gg8cj1a';
-const LOGINREDIRECT = 'https://jdam14dual.org:3000/welcome/';
-const LOGINURL = `https://${DOMAINLOGIN}/login?response_type=token&client_id=${LOGINCLIENT}&redirect_uri=${LOGINREDIRECT}`;
+import { Oauth2AWSAPI, LambdaAuthorizedApi } from './utils.js';
 
-// Initialize the Amazon Cognito credentials provider
+const userInfoDefault = {
+    loggedIn: false,
+    email: null,
+    name: null,
+    picture: null,
+    tokens: {
+        access: null,
+        refresh: null,
+        id: null,
+        expirationDate: null,
+        type: null
+    }
+};
 
-AWS.config.region = 'us-east-1'; // Region
-AWS.config.credentials = new AWS.CognitoIdentityCredentials({
-    IdentityPoolId: 'us-east-1:fce607c9-d20b-4996-8ae7-4f059054cfdd',
-});
+const UserInfoContext = React.createContext(userInfoDefault);
 
-const useStyles = makeStyles((theme) => ({
-  root: {
-    flexGrow: 1,
-  },
-  menuButton: {
-    marginRight: theme.spacing(2),
-  },
-  title: {
-    flexGrow: 1,
-  },
-}));
+// import AWS from 'aws-sdk';
+/* 
+    // Not required at the moment because we implemented our own sdk for auth but keep it here
+    // Initialize the Amazon Cognito credentials provider
+    AWS.config.region = 'us-east-1'; // Region
+    AWS.config.credentials = new AWS.CognitoIdentityCredentials({
+        IdentityPoolId: 'us-east-1:fce607c9-d20b-4996-8ae7-4f059054cfdd',
+    });
+*/
 
-function Welcome(props) {
-    const { hash } = useLocation();
-    const hashParams = hash.replace("#", "").split("&").map(e => e.split("="));
+// Initialize cognito auth api instance
+const apiInstance = new Oauth2AWSAPI(axios, 
+                    process.env.REACT_APP_COGNITO_AUTH_API_BASE_URI, 
+                    process.env.REACT_APP_COGNITO_CLIENT_ID,
+                    process.env.REACT_APP_COGNITO_CLIENT_SECRET);
 
-    return (
-        <>
-            <p>Welcome User!</p>
-            <p>Your credentials:</p>
-            <table>
-                {hashParams.map(e=> <tr><td>{e[0]}</td><td>{e[1]}</td></tr>)}
-            </table>
-        </>
-    );
-}
+// Lambda backend api
+const lambdaApiInstance = new LambdaAuthorizedApi(axios, process.env.REACT_APP_LAMBDA_API_BASE_URL);
 
-function Logout() {
-    return (
-        <p>You have been logged out</p>
-    );
-}
+const LOGINURL = apiInstance.toURI(
+                        apiInstance.authorizationEndPoint(
+                          process.env.REACT_APP_COGNITO_AUTH_REDIRECT_URI));
+
+const storage = window.localStorage;
+const storageUserInfoKey = 'userInfo';
 
 function App() {
-    return (
-        <Router>
-            <Switch>
-                <Route path="/welcome/">
-                    <Welcome />
-                </Route>
-                <Route path="/logout/">
-                    <Logout />
-                </Route>
-                <Route path="/">
-                    <Home />
-                </Route>
-            </Switch>
-        </Router>
-    );
-}
+    var storedUser = (storage.getItem(storageUserInfoKey) === null) ? 
+                        userInfoDefault : 
+                        JSON.parse(storage.getItem(storageUserInfoKey));
 
-function Home() {
-  const classes = useStyles();
-  return (
-      <Container maxWidth="sm">
-        <AppBar position="static">
-            <Toolbar>
-                <IconButton edge="start" className={classes.menuButton} color="inherit" aria-label="menu">
-                    <MenuIcon />
-                </IconButton>
-                <Typography variant="h6" className={classes.title}>
-                News
-                </Typography>
-                <Button color="inherit">Login</Button>
-            </Toolbar>
-        </AppBar>
-        
-        <Link href={LOGINURL}>LOGIN</Link>
-      </Container>
-  );
+
+    const [userInfo, setUserInfo] = useState(storedUser);
+
+    // when userInfo state changes...
+    useEffect(() => {
+        storage.setItem('userInfo', JSON.stringify(userInfo));
+
+       // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [JSON.stringify(userInfo), userInfo]);
+
+    const handleUserInfo = (data) => {
+        setUserInfo(data);
+    };
+
+    // LOGOUT
+    const handleLogout = (callback) => {
+        storage.clear();
+        setUserInfo(userInfoDefault);
+        callback();
+    };
+
+    var CoreUIprops = {
+        loginHref: LOGINURL,
+        isLoggedIn: userInfo.loggedIn,
+        displayName: userInfo.name,
+        avatar: userInfo.picture
+    };
+
+    return (
+        <UserInfoContext.Provider value={userInfo}>
+            <Router>
+                <Switch>
+                    <Route path="/welcome/">
+                        <CoreUI {...CoreUIprops} title="Welcome">
+                            <Welcome api={apiInstance} lambdaApi={lambdaApiInstance} accessToken={userInfo.tokens.access} handleUserInfo={handleUserInfo}/>
+                        </CoreUI>
+                    </Route>
+                    <Route path="/logout/">
+                        <CoreUI {...CoreUIprops} title="Logout">
+                            <Logout handleLogout={handleLogout} />
+                        </CoreUI>
+                    </Route>
+                    <Route path="/">
+                        <CoreUI {...CoreUIprops} title="Home">
+                            <Home loginHref={LOGINURL}/>
+                        </CoreUI>
+                    </Route>
+                </Switch>
+            </Router>
+        </UserInfoContext.Provider>
+    );
 }
 
 export default App;
+
+export {UserInfoContext, userInfoDefault};
+
+
+
+
