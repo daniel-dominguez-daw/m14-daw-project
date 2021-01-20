@@ -48,54 +48,56 @@ function CoreUI(props) {
     // @todo check if you are logged in or not within app state and change UI
     // @todo pull userinfo context
     return (
-        <Container maxWidth="lg">
-            <AppBar position="static">
-                <Toolbar>
-                    <IconButton  onClick={handleClick}
-                            edge="start" 
-                            className={classes.menuButton} 
-                            color="inherit" 
-                            aria-label="menu">
-                        <MenuIcon />
-                    </IconButton>
-                    <Menu
-                        id="fade-menu"
-                        anchorEl={menuEl}
-                        keepMounted
-                        open={open}
-                        onClose={handleClose}
-                        TransitionComponent={Fade}
-                    >
-                        <MenuItem onClick={handleClose} component={RouterLink} to="/">Home page</MenuItem>
-                        <MenuItem onClick={handleClose} component={RouterLink} to="/welcome">Profile</MenuItem>
-                        { (isLoggedIn === false) ? 
-                        <MenuItem color="inherit">
-                            <Link href={loginHref} color="inherit">Login</Link>
-                        </MenuItem>
-                            :
-                        <MenuItem onClick={handleClose} component={RouterLink} to="/logout">Logout</MenuItem>
-                        }
-                        <MenuItem onClick={handleClose}>CLOSE</MenuItem>
-                    </Menu>
-                    <Typography variant="h6" className={classes.title}>
-                        {title}
-                    </Typography>
-
-                    <Avatar alt={displayName} src={avatar} />
-
+        <>
+        <AppBar position="static">
+            <Toolbar>
+                <IconButton  onClick={handleClick}
+                        edge="start" 
+                        className={classes.menuButton} 
+                        color="inherit" 
+                        aria-label="menu">
+                    <MenuIcon />
+                </IconButton>
+                <Menu
+                    id="fade-menu"
+                    anchorEl={menuEl}
+                    keepMounted
+                    open={open}
+                    onClose={handleClose}
+                    TransitionComponent={Fade}
+                >
+                    <MenuItem onClick={handleClose} component={RouterLink} to="/">Home page</MenuItem>
+                    <MenuItem onClick={handleClose} component={RouterLink} to="/welcome">Profile</MenuItem>
                     { (isLoggedIn === false) ? 
-                    <Button color="inherit">
-                        <Link href={loginHref} color="inherit">LOGIN</Link>
-                    </Button>
-                    :
-                    <Button component={RouterLink} to="/logout" color="inherit">
-                        LOGOUT
-                    </Button>
+                    <MenuItem color="inherit">
+                        <Link href={loginHref} color="inherit">Login</Link>
+                    </MenuItem>
+                        :
+                    <MenuItem onClick={handleClose} component={RouterLink} to="/logout">Logout</MenuItem>
                     }
-                </Toolbar>
-            </AppBar>
+                    <MenuItem onClick={handleClose}>CLOSE</MenuItem>
+                </Menu>
+                <Typography variant="h6" className={classes.title}>
+                    {title}
+                </Typography>
+
+                <Avatar alt={displayName} src={avatar} />
+
+                { (isLoggedIn === false) ? 
+                <Button color="inherit">
+                    <Link href={loginHref} color="inherit">LOGIN</Link>
+                </Button>
+                :
+                <Button component={RouterLink} to="/logout" color="inherit">
+                    LOGOUT
+                </Button>
+                }
+            </Toolbar>
+        </AppBar>
+        <Container maxWidth="lg">
             {children}
         </Container>
+    </>
     );
 }
 
