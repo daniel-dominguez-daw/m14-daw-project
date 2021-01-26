@@ -1,0 +1,14 @@
+{
+  "name": "cognito-uid-from-jwd",
+  "version": "1.0.0",
+  "description": "Function that returns the unique identifier from a JWT from AWS Cognito",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "jwt-decode": "^3.1.2"
+  }
+}
