@@ -11,6 +11,7 @@
     "aws-sdk": "^2.794.0",
     "axios": "^0.21.0",
     "glamor": "^2.20.40",
+    "jwt-decode": "^3.1.2",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
     "react-router-dom": "^5.2.0",
