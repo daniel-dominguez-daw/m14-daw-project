@@ -23,5 +23,7 @@
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-lambdas/modules/**/node_modules
-lambdas/layers/*/nodejs/node_modules/*/node_modules
+/lambdas/modules/**/node_modules
+/lambdas/layers/*/nodejs/node_modules/*/node_modules
+/lambdas/functions/*/node_modules
+/lambdas/functionoutput
