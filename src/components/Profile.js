@@ -1,13 +1,13 @@
 import Typography from '@material-ui/core/Typography';
 
-function Home(props) {
+function Profile(props) {
     return (
         <>
         <Typography variant="h2">
-        HOME
+        Profile
         </Typography>
         </>
     );
 }
 
-export default Home;
+export default Profile;
