@@ -13,6 +13,9 @@ import axios from 'axios'; // ajax library
 import CoreUI from './components/CoreUI.js';
 import Welcome from './components/Welcome.js';
 import Home from './components/Home.js';
+import Profile from './components/Profile.js';
+import Workspaces from './components/Workspaces.js';
+import Settings from './components/Settings.js';
 import Logout from './components/Logout.js';
 
 import { Oauth2AWSAPI, LambdaAuthorizedApi } from './utils.js';
@@ -86,29 +89,44 @@ function App() {
     };
 
     var CoreUIprops = {
-        loginHref: LOGINURL,
-        isLoggedIn: userInfo.loggedIn,
-        displayName: userInfo.name,
-        avatar: userInfo.picture
+        loginHref: LOGINURL
     };
 
     return (
         <UserInfoContext.Provider value={userInfo}>
             <Router>
                 <Switch>
-                    <Route path="/welcome/">
+                    <Route path="/welcome">
                         <CoreUI {...CoreUIprops} title="Welcome">
-                            <Welcome api={apiInstance} lambdaApi={lambdaApiInstance} accessToken={userInfo.tokens.access} handleUserInfo={handleUserInfo}/>
+                            <Welcome api={apiInstance} 
+                                lambdaApi={lambdaApiInstance} 
+                                accessToken={userInfo.tokens.access} 
+                                handleUserInfo={handleUserInfo}/>
                         </CoreUI>
                     </Route>
-                    <Route path="/logout/">
+                    <Route path="/logout">
                         <CoreUI {...CoreUIprops} title="Logout">
                             <Logout handleLogout={handleLogout} />
                         </CoreUI>
                     </Route>
-                    <Route path="/">
+                    <Route path="/" exact={true}>
                         <CoreUI {...CoreUIprops} title="Home">
-                            <Home loginHref={LOGINURL}/>
+                            <Home />
+                        </CoreUI>
+                    </Route>
+                    <Route path="/profile">
+                        <CoreUI {...CoreUIprops} title="Profile">
+                            <Profile />
+                        </CoreUI>
+                    </Route>
+                    <Route path="/workspaces">
+                        <CoreUI {...CoreUIprops} title="Workspaces">
+                            <Workspaces />
+                        </CoreUI>
+                    </Route>
+                    <Route path="/settings">
+                        <CoreUI {...CoreUIprops} title="Settings">
+                            <Settings />
                         </CoreUI>
                     </Route>
                 </Switch>
