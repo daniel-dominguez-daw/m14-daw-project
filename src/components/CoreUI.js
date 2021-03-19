@@ -58,6 +58,9 @@ const useStyles = makeStyles((theme) => ({
   },
   textSmall: {
       fontSize: '80%'
+  },
+  content: {
+      padding: theme.spacing(2)
   }
 }));
 
@@ -226,7 +229,7 @@ function CoreUI(props) {
                     }
                 </Toolbar>
             </AppBar>
-            <Container component="main" maxWidth="lg">
+            <Container className={classes.content} component="main" maxWidth="lg">
                 {children}
             </Container>
         </>
