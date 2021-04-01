@@ -114,10 +114,11 @@ function App() {
                             <Home />
                         </CoreUI>
                     </Route>
-                    <Route path="/profile">
+                    <Route path="/profile" render={(props) => 
                         <CoreUI {...CoreUIprops} title="Profile">
-                            <Profile />
+                            <Profile {...props} />
                         </CoreUI>
+                    }>
                     </Route>
                     <Route path="/workspaces">
                         <CoreUI {...CoreUIprops} title="Workspaces">
