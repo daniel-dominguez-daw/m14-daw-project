@@ -1,20 +1,28 @@
-import { useEffect } from 'react';
-import { useLocation, Link as RouterLink } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { useLocation, Link as RouterLink, Redirect } from 'react-router-dom';
 import { makeStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
 import Avatar from '@material-ui/core/Avatar';
 import { UserInfoContext, userInfoDefault } from '../App.js';
 
+import Loading from './Loading.js';
+
 const useStyles = makeStyles((theme) => (
     {
+        root: {
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'center',
+            alignItems: 'center'
+        },
         small: {
             width: theme.spacing(3),
             height: theme.spacing(3)
         },
         large: {
-            width: theme.spacing(7),
-            height: theme.spacing(7)
+            width: theme.spacing(14),
+            height: theme.spacing(14)
         }
     }
 ));
@@ -23,6 +31,7 @@ function Welcome(props) {
 
     const { api, lambdaApi, handleUserInfo, accessToken } = props;
     const { search } = useLocation();
+    var [loading, setLoading] = useState(true);
 
     // on component mount
     useEffect(() => {
@@ -56,6 +65,7 @@ function Welcome(props) {
                         });
 
                         handleUserInfo(newUserInfo);
+                        setTimeout(() => setLoading(false), 3000);
                     }, (er) => {
                         console.log('ERROR');
                         // handle userInfo api errors
@@ -107,14 +117,13 @@ function Welcome(props) {
     };
 
     return (
-        <>
+        <div className={classes.root}>
             <UserInfoContext.Consumer>
                 {({loggedIn, email, name, picture}) => (
                     loggedIn ? 
                     <>
                         <Avatar src={picture} alt={name} className={classes.large}/>
                         <p>Welcome {name}!</p>
-                        <p>Email: {email}</p>
                     </>
                     :
                     <>
@@ -122,16 +131,28 @@ function Welcome(props) {
                     </>
                 )}
             </UserInfoContext.Consumer>
-            <Grid
-                container
-                direction="column"
-                justify="center"
-                alignItems="center">
 
-                <Button variant="contained" color="primary" onClick={helloWorldApiCall}>TEST LAMBDA AUTHORIZED API</Button>
-                <Button variant="contained" component={RouterLink} to="/">Go to Homepage</Button>
-            </Grid>
-        </>
+            <Loading loading={loading} customText="Checking Moodly account...">
+        {/*
+                <Grid
+                    container
+                    direction="column"
+                    justify="center"
+                    alignItems="center">
+
+                    <Button variant="contained" color="primary" onClick={helloWorldApiCall}>TEST LAMBDA AUTHORIZED API</Button>
+                    <Button variant="contained" component={RouterLink} to="/">Go to Homepage</Button>
+                </Grid>
+                */}
+                <Redirect to={{ 
+                    pathname: '/profile', 
+                    state: {name: 'FromWelcomePage',
+                            email: 'from@welcome.pg',
+                            bio: 'This data is coming from the Welcome Component'
+                    }}
+                } />
+            </Loading>
+        </div>
     );
 }
 

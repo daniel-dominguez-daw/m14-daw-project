@@ -1,7 +1,7 @@
 import { makeStyles } from '@material-ui/core/styles';
-import { useState } from 'react';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Box from '@material-ui/core/Box';
+import Typography from '@material-ui/core/Typography';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -18,12 +18,14 @@ const useStyles = makeStyles((theme) => ({
 function Loading(props) {
     const classes = useStyles();
 
-    const { children, loading } = props;
+    const { children, loading, customText } = props;
+
+    const message = (customText !== undefined) ? <Typography variant="h6">{customText}</Typography> : null;
 
     return (
         <Box className={classes.root}>
             {(loading ? 
-                <CircularProgress /> :
+                <><CircularProgress />{message}</> :
                 children
             )}
         </Box>

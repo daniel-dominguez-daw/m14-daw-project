@@ -20,26 +20,36 @@ const useStyles = makeStyles((theme) => ({
 
 function Profile(props) {
     const classes = useStyles();
+    var data;
+    if(props.location.state !== undefined) {
+        data = props.location.state;
+    }else{
+        data = undefined;
+    }
 
-    const [name, setName] = useState('');
+    const [name, setName] = useState((data !== undefined) ? data.name : '');
+    const [email, setEmail] = useState((data !== undefined) ? data.email : '');
+    const [bio, setBio] = useState((data !== undefined) ? data.bio : '');
     const [nameError, setNameError] = useState(false);
-    const [email, setEmail] = useState('');
     const [emailError, setEmailError] = useState(false);
-    const [bio, setBio] = useState('');
     const [bioError, setBioError] = useState(false);
 
     const [loading, setLoading] = useState(true);
     const [savedChanges, setSavedChanges] = useState(false);
 
     const fetchProfileFromDB = () => {
-        setLoading(true);
+        if(data === undefined){
+            setLoading(true);
 
-        setTimeout(() => {
-            setName("Daniel Domínguez");
-            setEmail("cf19daniel.dominguez@iesjoandaustria.org");
-            setBio("¡Hola! Esto es la información de mi Bio y ahora mismo no se que poner.");
+            setTimeout(() => {
+                setName("Daniel Domínguez");
+                setEmail("cf19daniel.dominguez@iesjoandaustria.org");
+                setBio("¡Hola! Esto es la información de mi Bio y ahora mismo no se que poner.");
+                setLoading(false);
+            }, 3000);
+        }else{
             setLoading(false);
-        }, 3000);
+        }
     };
 
     const saveProfileIntoDB = () => {
@@ -96,7 +106,6 @@ function Profile(props) {
     };
 
     const applyChanges = () => {
-        console.log('apply');
         validateState(() => {
             console.log('postvalidate');
             saveProfileIntoDB();
