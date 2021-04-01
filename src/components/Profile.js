@@ -65,14 +65,14 @@ function Profile(props) {
         let validates = true;
 
         const isEmail = email.match(/^.*@.*\..*$/);
-        if(!isEmail || email.trim().length == 0){
+        if(!isEmail || email.trim().length === 0){
             setEmailError(true);
             validates = false;
         }else{
             setEmailError(false);
         }
 
-        if(name.length == 0 || name.length > 80) {
+        if(name.length === 0 || name.length > 80) {
             setNameError(true);
             validates = false;
         }else{
