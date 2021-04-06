@@ -1,5 +1,6 @@
 var AWS = require('aws-sdk');
 const { getUid } = require('cognito-uid-from-jwd');
+const { v4: uuidv4 } = require('uuid');
 
 exports.handler = async (event) => {
     // configure Dynamo
@@ -10,6 +11,13 @@ exports.handler = async (event) => {
 
     var data, statusCode, response;
 
+    
+
+    /** generate fresh uuidv4 **/
+    var response = {
+        statusCode: 200,
+        body: JSON.stringify({ uuid: uuidv4()})
+    };
     // Put item (INSERT)
     /*
     var params = {
@@ -41,6 +49,7 @@ exports.handler = async (event) => {
     */
 
     // Delete item
+    /*
     var params = {
         TableName: 'moodly',
         Key: {
@@ -67,6 +76,7 @@ exports.handler = async (event) => {
         };
     }
 
+*/
     // Select data from main table or index
     // @see https://docs.aws.amazon.com/amazondynamodb/latest/APIReference/API_Query.html
     

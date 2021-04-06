@@ -1,1 +1,1 @@
-{"statusCode":200,"body":"{}"}
+{"statusCode":200,"body":"{\"Items\":[{\"screen_name\":{\"S\":\"User d286289b-82be-4b53-95b7-654ac86c7a15\"},\"WS_uuids\":{\"SS\":[\"null\"]},\"uuid\":{\"S\":\"d286289b-82be-4b53-95b7-654ac86c7a15\"},\"SK\":{\"S\":\"USER#d286289b-82be-4b53-95b7-654ac86c7a15\"},\"time\":{\"S\":\"1617722092015\"},\"PK\":{\"S\":\"USER#d286289b-82be-4b53-95b7-654ac86c7a15\"},\"email\":{\"S\":\"example@example.com\"},\"WS_names\":{\"SS\":[\"null\"]},\"body\":{\"S\":\"Fill your BIO\"}}],\"Count\":1,\"ScannedCount\":1}"}
