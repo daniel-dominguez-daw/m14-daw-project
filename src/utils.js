@@ -110,6 +110,7 @@ class LambdaAuthorizedApi {
             method: method,
             url: this.baseUrl + endpoint,
             data: params,
+            params: params,
             headers: headers,
             transformRequest: (data, headers) => {
                 let str = [];
