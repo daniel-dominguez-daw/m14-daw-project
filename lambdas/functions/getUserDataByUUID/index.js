@@ -73,31 +73,24 @@ exports.handler = async (event) => {
             // User with that uuid not created yet
             // Create user
             
+            const paramName = event["queryStringParameters"]['name'];
+            const paramEmail = event["queryStringParameters"]['email'];
+
                 const profileData = {
-                    'PK' : 'USER#'+userId,
-                    'SK' : 'USER#'+userId,
-                    'screen_name' : 'User ' + userId,
-                    'uuid' : userId,
-                    'email' : 'example@example.com',
-                    'time' : ''+new Date().getTime(),
-                    'body' : 'Fill your BIO',
-                    'WS_uuids' : ['null'],
-                    'WS_names' : ['null']
+                    'PK' : {S: 'USER#'+userId},
+                    'SK' : {S: 'USER#'+userId},
+                    'screen_name' : {S: paramName},
+                    'uuid' : {S: userId},
+                    'email' : {S: paramEmail},
+                    'time' : {S: ''+new Date().getTime()},
+                    'body' : {S: 'Fill your BIO'},
+                    'WS_uuids' : {SS: ['null']},
+                    'WS_names' : {SS: ['null']}
                 };
 
                 var createUserParams = {
                     TableName: 'moodly',
-                    Item: {
-                        'PK' : {S: profileData.PK},
-                        'SK' : {S: profileData.SK},
-                        'screen_name' : {S: profileData.screen_name},
-                        'uuid' : {S: profileData.uuid},
-                        'email' : {S: profileData.email},
-                        'time' : {S: profileData.time},
-                        'body' : {S : profileData.body},
-                        'WS_uuids' : {SS : profileData.WS_uuids},
-                        'WS_names' : {SS : profileData.WS_names}
-                    }
+                    Item: profileData
                 };
 
                 var createUserData = await ddb.putItem(createUserParams).promise();
@@ -107,6 +100,7 @@ exports.handler = async (event) => {
                 response = {
                     statusCode: 200,
                     body: JSON.stringify({
+                        ev: event,
                         Items : [profileData],
                         Count : 1})
                 };

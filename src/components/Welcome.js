@@ -32,7 +32,28 @@ function Welcome(props) {
     const { api, lambdaApi, handleUserInfo, accessToken } = props;
     const { search } = useLocation();
     var [loading, setLoading] = useState(true);
+    var [fetchedProfile, setFetchedProfile] = useState({
+        name: 'fromWelcomePage',
+        email: 'from@welcome.pag',
+        bio: 'uwu'
+    });
 
+    const fetchProfile = (token, params) => {
+        return lambdaApi.performRequest('GET', '/user', token, params).then(res => {
+            if(res.status === 200) {
+                console.log(res.data);
+                return res.data;
+            }
+        }).catch((error) => {
+            if(error.response) {
+                if(error.response.status === 401) {
+                    const msg = `Error: ${JSON.stringify(error.response.data)}`;
+                    alert(msg);
+                }
+            }
+            console.log(error);
+        });
+    };
     // on component mount
     useEffect(() => {
         const urlParams = new URLSearchParams(search);
@@ -65,7 +86,20 @@ function Welcome(props) {
                         });
 
                         handleUserInfo(newUserInfo);
-                        setTimeout(() => setLoading(false), 3000);
+                        fetchProfile(data.data.access_token, {name: newUserInfo.name, email: newUserInfo.email}).then(r => {
+                            console.log(r);
+                            if(r.Count !== undefined && r.Count == 1){
+                                setFetchedProfile({
+                                    name: r.Items[0].screen_name.S,
+                                    email: r.Items[0].email.S,
+                                    bio: r.Items[0].body.S
+                                });
+
+                                setLoading(false);
+                            }else{
+                                alert('FetchedProfile error? no data');
+                            }
+                        });
                     }, (er) => {
                         console.log('ERROR');
                         // handle userInfo api errors
@@ -116,6 +150,7 @@ function Welcome(props) {
         });
     };
 
+
     return (
         <div className={classes.root}>
             <UserInfoContext.Consumer>
@@ -146,9 +181,9 @@ function Welcome(props) {
                 */}
                 <Redirect to={{ 
                     pathname: '/profile', 
-                    state: {name: 'FromWelcomePage',
-                            email: 'from@welcome.pg',
-                            bio: 'This data is coming from the Welcome Component'
+                    state: {name: fetchedProfile.name,
+                            email: fetchedProfile.email,
+                            bio: fetchedProfile.bio
                     }}
                 } />
             </Loading>
