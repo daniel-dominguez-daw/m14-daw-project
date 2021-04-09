@@ -116,7 +116,9 @@ function App() {
                     </Route>
                     <Route path="/profile" render={(props) => 
                         <CoreUI {...CoreUIprops} title="Profile">
-                            <Profile {...props} />
+                            <Profile {...props} 
+                                lambdaApi={lambdaApiInstance} 
+                                accessToken={userInfo.tokens.access} />
                         </CoreUI>
                     }>
                     </Route>
