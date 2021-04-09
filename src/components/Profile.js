@@ -37,19 +37,21 @@ function Profile(props) {
     const [loading, setLoading] = useState(true);
     const [savedChanges, setSavedChanges] = useState(false);
 
-    const fetchProfileFromDB = () => {
-        if(data === undefined){
-            setLoading(true);
-
-            setTimeout(() => {
-                setName("Daniel Domínguez");
-                setEmail("cf19daniel.dominguez@iesjoandaustria.org");
-                setBio("¡Hola! Esto es la información de mi Bio y ahora mismo no se que poner.");
-                setLoading(false);
-            }, 3000);
-        }else{
-            setLoading(false);
-        }
+    const fetchProfileFromAWS = (token, params) => {
+        return props.lambdaApi.performRequest('GET', '/user', token, params).then(res => {
+            if(res.status === 200) {
+                console.log(res.data);
+                return res.data;
+            }
+        }).catch((error) => {
+            if(error.response) {
+                if(error.response.status === 401) {
+                    const msg = `Error: ${JSON.stringify(error.response.data)}`;
+                    alert(msg);
+                }
+            }
+            console.log(error);
+        });
     };
 
     const saveProfileIntoDB = () => {
@@ -113,7 +115,26 @@ function Profile(props) {
     };
 
     useEffect(() => {
-        fetchProfileFromDB();
+        const fetchProfile = () => {
+            if(data === undefined){
+                setLoading(true);
+
+                fetchProfileFromAWS(props.accessToken, {}).then((res)=>{
+                    if(res.Count === 1) {
+                        setName(res.Items[0].screen_name.S);
+                        setEmail(res.Items[0].email.S);
+                        setBio(res.Items[0].body.S);
+                        setLoading(false);
+                    } else {
+                        alert("Profile does not exist?");
+                    }
+                });
+            }else{
+                setLoading(false);
+            }
+        };
+        fetchProfile();
+        //eslint-disable-next-line
     }, []);
 
     return (
