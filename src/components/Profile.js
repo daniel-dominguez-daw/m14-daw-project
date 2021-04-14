@@ -54,12 +54,28 @@ function Profile(props) {
         });
     };
 
-    const saveProfileIntoDB = () => {
+    const saveProfileToAws = (token, params) => {
+        return props.lambdaApi.performRequest('PUT', '/user', token, params).then(res => {
+            if(res.status === 200) {
+                console.log(res.data);
+                return res.data;
+            }
+        }).catch((error) => {
+            if(error.response) {
+                if(error.response.status === 401) {
+                    const msg = `Error: ${JSON.stringify(error.response.data)}`;
+                    alert(msg);
+                }
+            }
+            console.log(error);
+        });
+    };
+    const saveProfileIntoDB = (token, params) => {
         setLoading(true);
-        setTimeout(() => {
+        saveProfileToAws(token, params).then((res) => {
             setSavedChanges(true);
             setLoading(false);
-        }, 3000);
+        });
     };
 
     // handle change inputs
@@ -110,7 +126,7 @@ function Profile(props) {
     const applyChanges = () => {
         validateState(() => {
             console.log('postvalidate');
-            saveProfileIntoDB();
+            saveProfileIntoDB(props.accessToken, {name: name, email: email, bio: bio});
         });
     };
 
