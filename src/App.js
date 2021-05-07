@@ -15,6 +15,7 @@ import Welcome from './components/Welcome.js';
 import Home from './components/Home.js';
 import Profile from './components/Profile.js';
 import Workspaces from './components/Workspaces.js';
+import CreateWorkspaceForm from './components/CreateWorkspaceForm.js';
 import Settings from './components/Settings.js';
 import Logout from './components/Logout.js';
 
@@ -122,9 +123,14 @@ function App() {
                         </CoreUI>
                     }>
                     </Route>
-                    <Route path="/workspaces">
+                    <Route exact path="/workspaces">
                         <CoreUI {...CoreUIprops} title="Workspaces">
                             <Workspaces />
+                        </CoreUI>
+                    </Route>
+                    <Route exact path="/workspaces/create">
+                        <CoreUI {...CoreUIprops} title="Create">
+                            <CreateWorkspaceForm />
                         </CoreUI>
                     </Route>
                     <Route path="/settings">
