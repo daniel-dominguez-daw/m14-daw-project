@@ -6,7 +6,7 @@ Educational cloud based Application for schools.
 - [Project Memo](https://docs.google.com/document/d/14FWke1CToCg-EEPdCkbW7UON7LkKUuqnhNBj1dFbRMk/edit?usp=sharing)
 - [Gantt Diagram](https://docs.google.com/spreadsheets/d/1uD71WN5Mz1Ni7BCF21mpsnYuzAMX8eJIZ60IX0u6G38/edit?usp=sharing)
 - [DynamoDB schema plan](https://docs.google.com/spreadsheets/d/178uOmjsuPQu7Qq11IHncAg8lpDpGEazz53xzrZ32z5c/edit?usp=sharing)
-
+- [Adobe XD prototype](https://github.com/daniel-dominguez-daw/m14-daw-project/blob/c05a3e631b9882919d423e70bbc7de28f333a77c/docs/prototipo.png)
 
 ## Github Project Kanban tasks
 [See kanban board](https://github.com/daniel-dominguez-daw/m14-daw-project/projects/1)
